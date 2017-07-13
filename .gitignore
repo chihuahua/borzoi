@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# bazel-related files*~
+/bazel-*
+
+# Swap files
+**/*.swp
