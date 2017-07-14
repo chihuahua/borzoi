@@ -16,6 +16,23 @@ load("@io_bazel_rules_closure//closure:defs.bzl", "filegroup_external")
 
 closure_repositories()
 
+# Fetching gflags via an http_archive yields an error.
+new_git_repository(
+    name = "com_github_google_python_gflags",
+    build_file_content = """
+py_library(
+    name = "gflags",
+    srcs = [
+        "gflags.py",
+        "gflags_validators.py",
+    ],
+    visibility = ["//visibility:public"],
+)
+""",
+    remote = "https://github.com/google/python-gflags",
+    tag = "python-gflags-2.0",
+)
+
 http_archive(
     name = "org_tensorflow_tensorboard",
     sha256 = "b793efe5536b06debcfadfa9ce7e774cadf654e5e9d52f6570ac11060d62e3a7",
