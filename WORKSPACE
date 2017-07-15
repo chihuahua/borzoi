@@ -33,6 +33,7 @@ py_library(
     tag = "python-gflags-2.0",
 )
 
+# For now, we use the same set of python libraries as TensorBoard.
 http_archive(
     name = "org_tensorflow_tensorboard",
     sha256 = "b793efe5536b06debcfadfa9ce7e774cadf654e5e9d52f6570ac11060d62e3a7",
