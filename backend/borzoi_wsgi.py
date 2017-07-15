@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import json
 import logging
+import os
 from werkzeug import wrappers
 
 import six
@@ -21,8 +22,48 @@ class BorzoiWSGI(object):
     """
     self._genome_reader = genome_reader
     self.data_applications = {
+      '/': self._serve_home_page,
+      '/contigs': self._serve_contigs,
       '/subsequence': self._serve_subsequence,
     }
+
+  @wrappers.Request.application
+  def _serve_contigs(self, request):
+    """Serves a list of all contigs and their lengths.
+
+    Args:
+      request: The werkzeug.Request object.
+
+    Returns:
+      A werkzeug.Response object.
+    """
+    data = []
+    for contig in self._genome_reader.get_contigs():
+      data.append({
+        'name': contig,
+        'length': self._genome_reader.get_contig_length(contig),
+      })
+    return wrappers.Response(
+        response=json.dumps(data), status=200, content_type='application/json')
+
+  @wrappers.Request.application
+  def _serve_home_page(self, request):
+    """Serves the home page.
+
+    Args:
+      request: The werkzeug.Request object.
+
+    Returns:
+      A werkzeug.Response object.
+
+    Raises:
+      IOError: If reading from disk fails.
+    """
+    root_directory = os.path.join(os.path.dirname(__file__), os.pardir)
+    path = os.path.join(root_directory, 'borzoi_frontend/server.html')
+    with open(os.path.abspath(path), 'rb') as f:
+      return wrappers.Response(
+          response=f.read(), status=200, content_type='text/html')
 
   @wrappers.Request.application
   def _serve_subsequence(self, request):

@@ -4,6 +4,9 @@ py_binary(
         "borzoi_wsgi.py",
     ],
     srcs_version = "PY2AND3",
+    data = [
+        "//borzoi_frontend:server",
+    ],
     deps = [
         "@six_archive//:six",
     ],

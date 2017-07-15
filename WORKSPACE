@@ -1,4 +1,4 @@
-workspace(name = "ai_google_pair_facets")
+workspace(name = "borzoi")
 
 http_archive(
     name = "io_bazel_rules_closure",
