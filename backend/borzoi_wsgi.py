@@ -72,6 +72,16 @@ class BorzoiWSGI(object):
     return wrappers.Response(
         response=json.dumps(data), status=200, content_type='application/json')
 
+  @wrappers.Request.application
+  def _handler_for_404s(self, request):
+    """Handles 404s.
+
+    Returns:
+      A werkzeug.Response object.
+    """
+    return wrappers.Response(
+        response='', status=404, content_type='text/plain')
+
   def _clean_path(self, path):
     """Removes trailing slash if present, unless it's the root path."""
     if len(path) > 1 and path.endswith('/'):
@@ -102,7 +112,6 @@ class BorzoiWSGI(object):
       return self.data_applications[clean_path](environ, start_response)
     else:
       logging.error('path %s not found, sending 404', clean_path)
-      return wrappers.Response(
-          response='', status=404, content_type='text/plain')
+      return self._handler_for_404s(environ, start_response)
     # pylint: enable=too-many-function-args
 

@@ -110,13 +110,8 @@ def run_simple_server(borzoi_app, host, port):
     # An error message was already logged
     # TODO(@jart): Remove log and throw anti-pattern.
     sys.exit(-1)
-  logger = logging.getLogger('borzoi logging')
-  logger.setLevel(logging.INFO)
-  logger.info('Started server at %s (Press CTRL+C to quit) ', url)
-  try:
-    server.serve_forever()
-  finally:
-    logger.info('')
+  logging.info('Started server at %s (Press CTRL+C to quit) ', url)
+  server.serve_forever()
 
 
 def main(flags, argv):
