@@ -15,6 +15,7 @@ limitations under the License.
 <link rel="import" href="../../ts_lib/camera.html">
 <link rel="import" href="../../ts_lib/data-manager.html">
 <link rel="import" href="../../ts_lib/data-requester.html">
+<link rel="import" href="../genome-position-indicator/genome-position-indicator.html">
 <link rel="import" href="../genome-viewer/genome-viewer.html">
 <dom-module id='borzoi-app'>
   <template>
@@ -30,6 +31,9 @@ limitations under the License.
     </style>
     <div id='all'>
       <template is="dom-if" if="[[contigsHaveBeenFetched]]">
+        <genome-position-indicator
+          camera=[[camera]]
+        ></genome-position-indicator>
         <genome-viewer
           camera=[[camera]]
           data-manager=[[dataManager]]

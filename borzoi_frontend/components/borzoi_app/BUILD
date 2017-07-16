@@ -13,6 +13,7 @@ ts_web_library(
     ],
     path = "/borzoi-frontend/components/borzoi-app",
     deps = [
+        "//borzoi_frontend/components/genome_position_indicator",
         "//borzoi_frontend/components/genome_viewer",
         "//borzoi_frontend/ts_lib:camera",
         "//borzoi_frontend/ts_lib:data_manager",

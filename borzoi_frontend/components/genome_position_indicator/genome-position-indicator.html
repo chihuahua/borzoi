@@ -12,32 +12,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <link rel="import" href="../../../polymer/polymer.html">
-<dom-module id='genome-viewer'>
+<dom-module id='genome-position-indicator'>
   <template>
     <style>
-      :host {
-        --base-pair-spacing: 0;
-        --viewer-container-indentation: 0;
-      }
-
-      #viewer-container {
-        height: 200px;
-        overflow: hidden;
-        text-indent: var(--viewer-container-indentation);
-        width: 100%;
-      }
-
-      .base-pair-container {
+      #genome-position-indicator-container {
         display: inline-block;
-        height: 100%;
-        overflow: auto;
-        text-align: center;
-        text-indent: 0;
-        width: var(--base-pair-spacing);
       }
     </style>
-    <div id='viewer-container'>
+    <div id='genome-position-indicator-container'>
+      <form id='position-form'>
+        <input id='position-text' type='text' value='[[bpLocation]]'>
+        <input type='submit' value='Go'>
+      </form>
     </div>
   </template>
 </dom-module>
-<script src='genome-viewer.js'></script>
+<script src='genome-position-indicator.js'></script>

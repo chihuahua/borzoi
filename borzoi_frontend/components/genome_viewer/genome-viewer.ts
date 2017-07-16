@@ -57,7 +57,7 @@ Polymer({
     const spacing = Math.floor(100 / Math.pow(2, camera.getZoom()));
 
     // Convert the current base pair location to pixel space.
-    const currentPixelSpaceLocation = camera.getBpLocation();
+    const currentPixelSpaceLocation = camera.getBpLocation() * spacing;
 
     // Start rendering 100px before starting.
     var renderingBpIndex = Math.floor(
