@@ -3,6 +3,19 @@ package(default_visibility = ["//visibility:public"])
 load("@org_tensorflow_tensorboard//tensorboard/defs:web.bzl", "ts_web_library")
 
 ts_web_library(
+    name = "camera",
+    srcs = [
+        "camera.html",
+        "camera.ts",
+    ],
+    path = "/borzoi-frontend/lib",
+    deps = [
+      ":event",
+      ":event_target",
+    ],
+)
+
+ts_web_library(
     name = "event_target",
     srcs = [
         "event-target.html",
@@ -13,7 +26,6 @@ ts_web_library(
       ":event",
     ]
 )
-
 
 ts_web_library(
     name = "event",

@@ -1,6 +1,3 @@
-/**
- * Axis objects are bound to create axis lines (paths).
- */
 export class Event {
   /**
    * The type of the event.
