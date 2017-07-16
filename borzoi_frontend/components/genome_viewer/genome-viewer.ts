@@ -23,15 +23,31 @@ Polymer({
   properties: {
     camera: Object,
     dataManager: Object,
+    renderPending: Boolean,
   },
   ready() {
     // When either the camera or data updates, re-render.
     // TODO(chizeng): Use requestAnimationFrame to throttle.
     (this.camera as Camera).addEventListener(
-        'change', this.render.bind(this));
+        'change', this.scheduleRender.bind(this));
     (this.dataManager as DataManager).addEventListener(
-        'change', this.render.bind(this));
-    this.render();
+        'change', this.scheduleRender.bind(this));
+  },
+  attached() {
+    // Render once after attaching (when we know the width).
+    this.scheduleRender();
+  },
+  scheduleRender() {
+    if (this.renderPending) {
+      // We have already scheduled a render.
+      return;
+    }
+
+    this.renderPending = true;
+    requestAnimationFrame(() => {
+      this.renderPending = false;
+      this.render();
+    });
   },
   render() {
     const camera = this.camera as Camera;
@@ -51,6 +67,8 @@ Polymer({
     // Compute the first pixel location at which to start rendering base pairs.
     this.customStyle['--base-pair-spacing'] = spacing + 'px';
     var pixelOffset = startingRenderingPixels - currentPixelSpaceLocation;
+    // The characters are center-aligned.
+    pixelOffset -= spacing / 2;
     this.customStyle['--viewer-container-indentation'] =
         '' + pixelOffset + 'px';
 
@@ -58,13 +76,14 @@ Polymer({
     this.$$('#viewer-container').innerHTML = '';
 
     // Re-render the base pairs.
+    // TODO(chizeng): Debug why base-pair-container properties aren't set.
     const bufferedViewerWidth = 100 + this.$$('#viewer-container').clientWidth;
     while (pixelOffset < bufferedViewerWidth) {
       const basePairContainer = document.createElement('div');
-      basePairContainer.classList.add('base-pair-container');
+      basePairContainer.setAttribute('class', 'base-pair-container');
       basePairContainer.innerHTML = dataManager.getBasePair(
           camera.getContig(), renderingBpIndex);
-      this.$$('#viewer-container').appendChild(basePairContainer);
+      Polymer.dom(this.$$('#viewer-container')).appendChild(basePairContainer);
 
       pixelOffset += spacing;
       renderingBpIndex += 1

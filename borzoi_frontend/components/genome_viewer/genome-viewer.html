@@ -22,14 +22,16 @@ limitations under the License.
 
       #viewer-container {
         height: 200px;
+        overflow: hidden;
         text-indent: var(--viewer-container-indentation);
         width: 100%;
       }
 
       .base-pair-container {
         display: inline-block;
+        height: 100%;
         text-align: center;
-        left: calc(-1 * var(--base-pair-spacing));
+        text-indent: 0;
         width: var(--base-pair-spacing);
       }
     </style>

@@ -26,6 +26,7 @@ export class DataRequester extends EventTarget {
 
   constructor(camera: Camera, dataManager: DataManager) {
     super();
+    this.requestIndex = 1;
     this.camera = camera;
     this.dataManager = dataManager;
 
@@ -66,6 +67,7 @@ export class DataRequester extends EventTarget {
     url += '&length=' + length;
 
     // When we are done loading, update the data manager.
+    const originalXhr = this.pendingXhr;
     this.pendingXhr.onload = () => {
       if (requestIndex === this.requestIndex) {
         this.pendingXhr = null;
@@ -75,12 +77,12 @@ export class DataRequester extends EventTarget {
       }
 
       // Update the camera.
-      const responseData = JSON.parse(this.pendingXhr.responseText);
+      const responseData = JSON.parse(originalXhr.responseText);
       this.dataManager.setData(
           responseData['contig'],
           responseData['start_index'],
           responseData['sequence']);
-    }
+    };
 
     // If the request fails, remove the reference to the XHR.
     this.pendingXhr.onerror = this.pendingXhr.onabort = () => {
