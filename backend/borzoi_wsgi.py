@@ -60,7 +60,8 @@ class BorzoiWSGI(object):
       IOError: If reading from disk fails.
     """
     root_directory = os.path.join(os.path.dirname(__file__), os.pardir)
-    path = os.path.join(root_directory, 'borzoi_frontend/server.html')
+    path = os.path.join(root_directory, 'borzoi_frontend', 'server.html')
+    # raise ValueError(path + ' ' + `os.listdir(path)`)
     with open(os.path.abspath(path), 'rb') as f:
       return wrappers.Response(
           response=f.read(), status=200, content_type='text/html')
@@ -107,6 +108,7 @@ class BorzoiWSGI(object):
           response='', status=500, content_type='text/plain')
 
     data = {
+      'contig': contig,
       'sequence': sequence,
       'start_index': start_index,
     }

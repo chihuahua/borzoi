@@ -7,7 +7,7 @@ export class EventTarget {
   /**
    * A mapping from event type to a list of listeners.
    */
-  private listeners: {[key: string]: Function[]}
+  private listeners: {[key: string]: Function[]};
 
   constructor() {
     this.listeners = {};
@@ -35,6 +35,11 @@ export class EventTarget {
 
   dispatchEvent(event: Event) {
     var stack = this.listeners[event.type];
+    if (!stack) {
+      // Nothing is listening to this event.
+      return;
+    }
+
     event.target = this;
     for (var i = 0, l = stack.length; i < l; i++) {
       stack[i].call(this, event);

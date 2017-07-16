@@ -12,30 +12,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <link rel="import" href="../../../polymer/polymer.html">
-<link rel="import" href="../../ts_lib/camera.html">
-<link rel="import" href="../../ts_lib/data-manager.html">
-<link rel="import" href="../../ts_lib/data-requester.html">
-<link rel="import" href="../genome-viewer/genome-viewer.html">
-<dom-module id='borzoi-app'>
+<dom-module id='genome-viewer'>
   <template>
     <style>
-      #all {
+      :host {
+        --base-pair-spacing: 0;
+        --viewer-container-indentation: 0;
+      }
+
+      #viewer-container {
+        height: 200px;
+        text-indent: var(--viewer-container-indentation);
         width: 100%;
       }
 
-      #all genome-viewer {
-        display: block;
-        width: 100%;
+      .base-pair-container {
+        display: inline-block;
+        text-align: center;
+        left: calc(-1 * var(--base-pair-spacing));
+        width: var(--base-pair-spacing);
       }
     </style>
-    <div id='all'>
-      <template is="dom-if" if="[[contigsHaveBeenFetched]]">
-        <genome-viewer
-          camera=[[camera]]
-          data-manager=[[dataManager]]
-        ></genome-viewer>
-      </template>
+    <div id='viewer-container'>
     </div>
   </template>
 </dom-module>
-<script src="borzoi-app.js"></script>
+<script src='genome-viewer.js'></script>
