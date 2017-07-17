@@ -27,7 +27,6 @@ Polymer({
   },
   ready() {
     // When either the camera or data updates, re-render.
-    // TODO(chizeng): Use requestAnimationFrame to throttle.
     (this.camera as Camera).addEventListener(
         'change', this.scheduleRender.bind(this));
     (this.dataManager as DataManager).addEventListener(
@@ -76,7 +75,6 @@ Polymer({
     this.$$('#viewer-container').innerHTML = '';
 
     // Re-render the base pairs.
-    // TODO(chizeng): Debug why base-pair-container properties aren't set.
     const bufferedViewerWidth = 100 + this.$$('#viewer-container').clientWidth;
     while (pixelOffset < bufferedViewerWidth) {
       const basePairContainer = document.createElement('div');
