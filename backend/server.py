@@ -107,11 +107,11 @@ def run_simple_server(borzoi_app, host, port):
   try:
     server, url = make_simple_server(borzoi_app, FLAGS.host, FLAGS.port)
   except socket.error:
-    # An error message was already logged
-    # TODO(@jart): Remove log and throw anti-pattern.
+    # An error message was already logged.
     sys.exit(-1)
 
   start_server_message = 'Started server at %s (Press CTRL+C to quit) ' % url
+  print(start_server_message)
   logging.info(start_server_message)
   server.serve_forever()
 
