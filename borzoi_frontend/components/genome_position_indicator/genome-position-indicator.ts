@@ -20,7 +20,15 @@ Polymer({
   properties: {
     camera: Object,
     bpLocation: Number,
+    contigs: Array,
+    selectedContig: {
+      type: String,
+      notify: true,
+    },
   },
+  observers: [
+    '_selectedContigChanged(selectedContig)',
+  ],
   ready() {
     this.$$('#position-form').addEventListener(
         'submit', this.onFormSubmit.bind(this));
@@ -28,6 +36,10 @@ Polymer({
     this.camera.addEventListener(
         'bp_location_changed', this.bpLocationChanged.bind(this));
     this.bpLocationChanged();
+
+    this.camera.addEventListener(
+        'contig_changed', this.contigChanged.bind(this));
+    this.contigChanged();
   },
   onFormSubmit(event) {
     // Do not submit the form.
@@ -41,5 +53,11 @@ Polymer({
   },
   bpLocationChanged() {
     this.set('bpLocation', this.camera.getBpLocation());
+  },
+  contigChanged() {
+    this.set('selectedContig', this.camera.getContig());
+  },
+  _selectedContigChanged(selectedContig) {
+    this.camera.setContig(selectedContig);
   },
 });

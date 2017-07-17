@@ -12,6 +12,9 @@ ts_web_library(
     ],
     path = "/borzoi-frontend/components/genome-position-indicator",
     deps = [
+        "@org_polymer_paper_dropdown_menu",
+        "@org_polymer_paper_item",
+        "@org_polymer_paper_menu",
         "@org_tensorflow_tensorboard//tensorboard/components/tf_imports:polymer",
     ],
 )

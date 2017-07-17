@@ -12,14 +12,34 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <link rel="import" href="../../../polymer/polymer.html">
+<link rel="import" href="../../../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../paper-item/paper-item.html">
+<link rel="import" href="../../../paper-menu/paper-menu.html">
+
 <dom-module id='genome-position-indicator'>
   <template>
     <style>
       #genome-position-indicator-container {
         display: inline-block;
       }
+
+      #position-form {
+        display: inline-block;
+      }
     </style>
     <div id='genome-position-indicator-container'>
+      <paper-dropdown-menu no-label-float no-animations noink class="run-dropdown">
+        <paper-menu
+            id="select"
+            class="dropdown-content"
+            selected="{{selectedContig}}"
+            attr-for-selected="value"
+            slot="dropdown-content">
+          <template is="dom-repeat" items="[[contigs]]">
+            <paper-item value="[[item]]">[[item]]</paper-item>
+          </template>
+        </paper-menu>
+      </paper-dropdown-menu>
       <form id='position-form'>
         <input id='position-text' type='text' value='[[bpLocation]]'>
         <input type='submit' value='Go'>

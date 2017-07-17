@@ -23,6 +23,7 @@ Polymer({
   properties: {
     contigsHaveBeenFetched: Boolean,
     camera: Object,
+    contigs: Array,
     dataManager: Object,
   },
   ready() {
@@ -38,6 +39,8 @@ Polymer({
       // The contigs will only be ever loaded once.
       this.dataManager.removeEventListener(
           'contig_lengths_set', contigLengthsSetHandler);
+      
+      this.set('contigs', this.dataManager.getAllContigs());
       this.set('contigsHaveBeenFetched', true);
 
       // TODO(chizeng): Handle degenerate case of no contigs.
