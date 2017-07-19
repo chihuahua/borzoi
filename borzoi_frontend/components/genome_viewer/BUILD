@@ -12,8 +12,7 @@ ts_web_library(
     ],
     path = "/borzoi-frontend/components/genome-viewer",
     deps = [
-        "//borzoi_frontend/ts_lib:camera",
-        "//borzoi_frontend/ts_lib:data_manager",
+        "//borzoi_frontend/ts_lib:drag",
         "@org_tensorflow_tensorboard//tensorboard/components/tf_imports:polymer",
     ],
 )

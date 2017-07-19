@@ -44,6 +44,21 @@ ts_web_library(
 )
 
 ts_web_library(
+    name = "drag",
+    srcs = [
+        "drag.html",
+        "drag.ts",
+    ],
+    path = "/borzoi-frontend/ts_lib",
+    deps = [
+      ":camera",
+      ":data_manager",
+      ":event",
+      ":event_target",
+    ]
+)
+
+ts_web_library(
     name = "event_target",
     srcs = [
         "event-target.html",

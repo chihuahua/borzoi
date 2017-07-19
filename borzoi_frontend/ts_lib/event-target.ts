@@ -13,14 +13,14 @@ export class EventTarget {
     this.listeners = {};
   }
 
-  addEventListener(eventType: string, callback: Function) {
+  addEventListener(eventType: string, callback: Function): void {
     if (!(eventType in this.listeners)) {
       this.listeners[eventType] = [];
     }
     this.listeners[eventType].push(callback);
   }
 
-  removeEventListener(eventType: string, callback: Function) {
+  removeEventListener(eventType: string, callback: Function): void {
     if (!(eventType in this.listeners)) {
       return;
     }
@@ -33,7 +33,7 @@ export class EventTarget {
     }
   }
 
-  dispatchEvent(event: Event) {
+  dispatchEvent(event: Event): void {
     var stack = this.listeners[event.type];
     if (!stack) {
       // Nothing is listening to this event.

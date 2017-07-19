@@ -15,22 +15,32 @@
  * limitations under the License.
  */
 
-import {Camera} from '../../ts_lib/camera';
-import {DataManager} from '../../ts_lib/data-manager';
+import {Drag} from '../../ts_lib/drag';
 
 Polymer({
   is: 'genome-viewer',
   properties: {
     camera: Object,
     dataManager: Object,
+
+    // A drag object for the drag currently going on. Null if none.
+    drag: Object,
+
     renderPending: Boolean,
+    spacingAtZoom0: {
+      type: Number,
+      value: 100,
+      readOnly: true,
+    }
   },
   ready() {
     // When either the camera or data updates, re-render.
-    (this.camera as Camera).addEventListener(
-        'change', this.scheduleRender.bind(this));
-    (this.dataManager as DataManager).addEventListener(
-        'change', this.scheduleRender.bind(this));
+    this.camera.addEventListener('change', this.scheduleRender.bind(this));
+    this.dataManager.addEventListener('change', this.scheduleRender.bind(this));
+
+    // When the user mouses down, start a drag.
+    this.$$('#viewer-container').addEventListener(
+        'mousedown', this._handleMouseDown.bind(this));
   },
   attached() {
     // Render once after attaching (when we know the width).
@@ -49,11 +59,11 @@ Polymer({
     });
   },
   render() {
-    const camera = this.camera as Camera;
-    const dataManager = this.dataManager as DataManager;
+    const camera = this.camera;
+    const dataManager = this.dataManager;
 
-    // At a zoom level of 0, place 100px between the centers of base pairs.
-    const spacing = Math.floor(100 / Math.pow(2, camera.getZoom()));
+    // Space the centers of base pairs.
+    const spacing = this._computePixelsPerBasePair();
 
     // Convert the current base pair location to pixel space.
     const currentPixelSpaceLocation = camera.getBpLocation() * spacing;
@@ -102,5 +112,27 @@ Polymer({
     }
 
     this.updateStyles();
+  },
+  _computePixelsPerBasePair() {
+    return Math.floor(this.spacingAtZoom0 / Math.pow(2, this.camera.getZoom()));
+  },
+  _handleMouseDown(mouseDownEvent) {
+    if (this.drag) {
+      // A drag is already happening. Cancel it. Maybe the user moused out of
+      // the browser and then moused up, so we did not detect the end of a drag.
+      this.drag.cancel();
+    }
+
+    // Start a new drag.
+    this.drag = new Drag(
+        this.camera,
+        this.dataManager,
+        mouseDownEvent.pageX,
+        this._computePixelsPerBasePair());
+
+    // Set to null after drag ends.
+    this.drag.addEventListener('ended', () => {
+      this.drag = null;
+    });
   },
 });
