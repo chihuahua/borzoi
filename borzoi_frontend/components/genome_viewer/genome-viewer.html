@@ -21,6 +21,7 @@ limitations under the License.
       }
 
       #viewer-container {
+        cursor: pointer;
         height: 200px;
         overflow: hidden;
         text-indent: var(--viewer-container-indentation);
@@ -33,7 +34,18 @@ limitations under the License.
         overflow: auto;
         text-align: center;
         text-indent: 0;
+        user-select: none;
         width: var(--base-pair-spacing);
+      }
+
+      .base-pair-text {
+        display: inline-block;
+        font-size: 20px;
+        margin: 0 0 10px 0;
+      }
+
+      .base-pair-index-text {
+        color: #999;
       }
     </style>
     <div id='viewer-container'>

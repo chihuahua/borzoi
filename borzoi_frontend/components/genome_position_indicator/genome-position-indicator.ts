@@ -46,7 +46,14 @@ Polymer({
     event.preventDefault();
 
     // Update the camera.
-    this.camera.setBpLocation(this.$$('#position-text').value);
+    let targetIndex = parseInt(this.$$('#position-text').value);
+    if (isNaN(targetIndex) || targetIndex < 0) {
+      // Do not navigate.
+      this.$$('#position-text').value = this.camera.getBpLocation();
+    } else {
+      // Navigate to the destination.
+      this.camera.setBpLocation(targetIndex);
+    }
 
     // Do not submit the form.
     return false;

@@ -79,8 +79,22 @@ Polymer({
     while (pixelOffset < bufferedViewerWidth) {
       const basePairContainer = document.createElement('div');
       basePairContainer.setAttribute('class', 'base-pair-container');
-      basePairContainer.innerHTML = dataManager.getBasePair(
+
+      // Print the letter of the base pair.
+      const basePairText = document.createElement('div');
+      basePairText.setAttribute('class', 'base-pair-text');
+      basePairText.textContent = dataManager.getBasePair(
           camera.getContig(), renderingBpIndex);
+      basePairContainer.appendChild(basePairText);
+
+      // TODO(chizeng): At deep zooms, do not always print the index.
+
+      // Print the index of the base pair.
+      const basePairIndexText = document.createElement('div');
+      basePairIndexText.setAttribute('class', 'base-pair-index-text');
+      basePairIndexText.textContent = String(renderingBpIndex);
+      basePairContainer.appendChild(basePairIndexText);
+      
       Polymer.dom(this.$$('#viewer-container')).appendChild(basePairContainer);
 
       pixelOffset += spacing;
