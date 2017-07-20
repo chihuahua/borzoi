@@ -8,6 +8,27 @@ import {DataManager} from './data-manager';
 import {Event} from './event';
 import {EventTarget} from './event-target';
 
+/**
+ * A record of when a mouse move occurred. Used for computing the viewport throw
+ * after the drag.
+ */
+class MouseMoveRecord {
+  /**
+   * The x location in pixels at the time of the mouse move event.
+   */
+  xLocation: number;
+
+  /**
+   * The timestamp in ms at the time of the mouse move event.
+   */
+  timeInMs: number;
+
+  constructor(xLocation: number, timeInMs: number) {
+    this.xLocation = xLocation;
+    this.timeInMs = timeInMs;
+  }
+}
+
 export class Drag extends EventTarget {
   /**
    * Manages the current view into the genome.
@@ -39,6 +60,16 @@ export class Drag extends EventTarget {
    */
   private cancelFunction: Object;
 
+  /**
+   * A record of mouse move events. Used to compute the viewport throw later.
+   */
+  private mouseMoveRecords: MouseMoveRecord[] = [];
+
+  /**
+   * The current velocity of the camera in pixels / ms. 0 if none.
+   */
+  private velocity = 0;
+
   constructor(
       camera: Camera,
       dataManager: DataManager,
@@ -55,7 +86,18 @@ export class Drag extends EventTarget {
     window.addEventListener('mousemove', mouseMoveHandler);
 
     const mouseUpCallback = () => {
-      (this.cancelFunction as Function)();
+      window.removeEventListener('mousemove', mouseMoveHandler);
+      if (this.mouseMoveRecords.length < 2) {
+        // Do not throw.
+        (this.cancelFunction as Function)();
+        return;
+      }
+
+      const recordB = this.mouseMoveRecords[1];
+      const recordA = this.mouseMoveRecords[0];
+
+      this.velocity = (recordB.xLocation - recordA.xLocation) / (
+          recordB.timeInMs - recordA.timeInMs);
     };
     this.cancelFunction = (mouseUpEvent) => {
       window.removeEventListener('mousemove', mouseMoveHandler);
@@ -66,6 +108,18 @@ export class Drag extends EventTarget {
       this.dispatchEvent(new Event('ended'));
     };
     window.addEventListener('mouseup', mouseUpCallback);
+  }
+
+  /**
+   * Called before rendering on every frame during the drag.
+   */
+  possiblyHandleViewportThrow() {
+    if (this.velocity === 0) {
+      // No viewport throw at the moment.
+      return;
+    }
+
+    // TODO: Change camera position in response to viewport throw.
   }
 
   /**
@@ -92,6 +146,13 @@ export class Drag extends EventTarget {
     targetBasePairLocation = Math.min(
         targetBasePairLocation,
         this.dataManager.getContigLength(this.camera.getContig()) - 1);
+
+    // We record the last 2 mouse move events.
+    this.mouseMoveRecords.push(
+        new MouseMoveRecord(mouseMoveEvent.pageX, Date.now()));
+    if (this.mouseMoveRecords.length > 2) {
+      this.mouseMoveRecords.shift();
+    }
 
     // Set the camera to the new location.
     this.camera.setBpLocation(targetBasePairLocation);

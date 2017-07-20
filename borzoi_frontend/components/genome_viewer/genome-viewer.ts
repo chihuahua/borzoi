@@ -59,6 +59,11 @@ Polymer({
     });
   },
   render() {
+    if (this.drag) {
+      // If a drag is occuring, always schedule a subsequent frame.
+      this.scheduleRender();
+    }
+
     const camera = this.camera;
     const dataManager = this.dataManager;
 
@@ -104,7 +109,7 @@ Polymer({
       basePairIndexText.setAttribute('class', 'base-pair-index-text');
       basePairIndexText.textContent = String(renderingBpIndex);
       basePairContainer.appendChild(basePairIndexText);
-      
+
       Polymer.dom(this.$$('#viewer-container')).appendChild(basePairContainer);
 
       pixelOffset += spacing;
