@@ -62,6 +62,9 @@ Polymer({
     if (this.drag) {
       // If a drag is occuring, always schedule a subsequent frame.
       this.scheduleRender();
+
+      // Possibly update the camera based on a viewport throw.
+      this.drag.possiblyHandleViewportThrow();
     }
 
     const camera = this.camera;

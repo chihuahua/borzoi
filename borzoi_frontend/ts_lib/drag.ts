@@ -66,9 +66,20 @@ export class Drag extends EventTarget {
   private mouseMoveRecords: MouseMoveRecord[] = [];
 
   /**
-   * The current velocity of the camera in pixels / ms. 0 if none.
+   * The initial base pair location when a throw begins.
    */
-  private velocity = 0;
+  private throwBeginBpLocation: number;
+
+  /**
+   * The initial velocity of the camera in pixels / ms on a throw.
+   */
+  private initialVelocity = 0;
+
+  /**
+   * How much to decelerate by every ms on the throw. Determined via manually
+   * trying out viewport throws.
+   */
+  private decelarationMagnitude = 0.03;
 
   constructor(
       camera: Camera,
@@ -96,7 +107,10 @@ export class Drag extends EventTarget {
       const recordB = this.mouseMoveRecords[1];
       const recordA = this.mouseMoveRecords[0];
 
-      this.velocity = (recordB.xLocation - recordA.xLocation) / (
+      this.throwBeginBpLocation = this.camera.getBpLocation();
+
+      // Velocity is backwards because we move against it.
+      this.initialVelocity = (recordA.xLocation - recordB.xLocation) / (
           recordB.timeInMs - recordA.timeInMs);
     };
     this.cancelFunction = (mouseUpEvent) => {
@@ -114,12 +128,33 @@ export class Drag extends EventTarget {
    * Called before rendering on every frame during the drag.
    */
   possiblyHandleViewportThrow() {
-    if (this.velocity === 0) {
+    if (this.initialVelocity === 0) {
       // No viewport throw at the moment.
       return;
     }
 
-    // TODO: Change camera position in response to viewport throw.
+    // If velocity is supposed to change direction, stop the throw.
+    const timePassedInMs = Date.now() - this.mouseMoveRecords[1].timeInMs;
+    if (Math.abs(this.initialVelocity) <
+        this.decelarationMagnitude * timePassedInMs) {
+      this.initialVelocity = 0;
+
+      // End the throw.
+      (this.cancelFunction as Function)();
+      return;
+    }
+
+    // Move in the direction of velocity. Decelerate.
+    const deceleration = this.initialVelocity > 0 ?
+        (-this.decelarationMagnitude) : this.decelarationMagnitude;
+    const targetPixelLocation =
+        this.throwBeginBpLocation * this.pixelsPerBasePair +
+        this.initialVelocity * timePassedInMs +
+        0.5 * deceleration * timePassedInMs * timePassedInMs;
+
+    const targetBasePairLocation = this._clampBasePairLocation(
+        targetPixelLocation / this.pixelsPerBasePair);
+    this.camera.setBpLocation(targetBasePairLocation);
   }
 
   /**
@@ -137,15 +172,10 @@ export class Drag extends EventTarget {
     const basePairDisplacement = displacement / this.pixelsPerBasePair;
 
     // We move in the opposite direction of the displacement, ie if the user
-    // drags left, the camera moves right to expose more of the left.
-    let targetBasePairLocation =
-        this.startingBasePairLocation - basePairDisplacement;
-
-    // Make sure that value is within bounds.
-    targetBasePairLocation = Math.max(targetBasePairLocation, 0);
-    targetBasePairLocation = Math.min(
-        targetBasePairLocation,
-        this.dataManager.getContigLength(this.camera.getContig()) - 1);
+    // drags left, the camera moves right to expose more of the left. Also, make
+    // sure that the location is within bounds.
+    let targetBasePairLocation = this._clampBasePairLocation(
+        this.startingBasePairLocation - basePairDisplacement);
 
     // We record the last 2 mouse move events.
     this.mouseMoveRecords.push(
@@ -156,5 +186,13 @@ export class Drag extends EventTarget {
 
     // Set the camera to the new location.
     this.camera.setBpLocation(targetBasePairLocation);
+  }
+
+  private _clampBasePairLocation(basePairLocation): number {
+    basePairLocation = Math.max(basePairLocation, 0);
+    basePairLocation = Math.min(
+        basePairLocation,
+        this.dataManager.getContigLength(this.camera.getContig()) - 1);
+    return basePairLocation;
   }
 }
